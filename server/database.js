@@ -19,7 +19,8 @@ function Database(dbname) {
                 DIFFICOLTA VARCHAR,
                 TEMPO INTEGER,
                 STATO VARCHAR,
-                USER INTEGER
+                USER INTEGER,
+                START_TIME VARCHAR
                 );`;
 
             this.db.run(sql, (err) => {
@@ -76,6 +77,20 @@ function Database(dbname) {
         return new Promise((resolve, reject) => {
             const sql = `SELECT * FROM INDOVINELLI`;
             this.db.all(sql, [], (err, rows) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                    return;
+                }
+                resolve(rows);
+            });
+        });
+    }
+
+    this.getStartTime = (id) => {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT START_TIME FROM INDOVINELLI WHERE ID = ?`;
+            this.db.all(sql, [id], (err, rows) => {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -144,6 +159,20 @@ function Database(dbname) {
         return new Promise((resolve, reject) => {
             const sql = 'UPDATE INDOVINELLI SET STATO = ? WHERE ID = ?';
             this.db.run(sql, [data.stato, id], (err) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                    return;
+                }
+                resolve("done");
+            });
+        });
+    }
+
+    this.updateStartTime = (data, id) => {
+        return new Promise((resolve, reject) => {
+            const sql = 'UPDATE INDOVINELLI SET START_TIME = ? WHERE ID = ?';
+            this.db.run(sql, [data.startTime, id], (err) => {
                 if (err) {
                     console.log(err);
                     reject(err);

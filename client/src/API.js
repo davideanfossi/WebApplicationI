@@ -26,7 +26,8 @@ const fetchIndovinelli = async () => {
         i.DIFFICOLTA,
         i.TEMPO,
         i.STATO,
-        i.USER
+        i.USER,
+        i.START_TIME
       ));
     } else errors = msg.errors;
   } catch (e) {
@@ -83,6 +84,27 @@ const fetchUsers = async () => {
   
     if (errors.length !== 0)
       throw errors;
+};
+
+const fetchStartTime = async (idIndovinello) => {
+  let errors = [];
+  
+  try {
+    const response = await fetch(new URL("startTime/" + idIndovinello, SERVER_BASE), {
+      credentials: "include"
+    });
+    const msg = await response.json();
+    if (response.ok) {
+      let a = msg.map(s => s.START_TIME)[0];
+      return a;
+    } else errors = msg.errors;
+  } catch (e) {
+    const err = [e.message];
+    throw err;
+  }
+
+  if (errors.length !== 0)
+    throw errors;
 };
 
 const submitIndovinello = async indovinello => {
@@ -195,6 +217,33 @@ const updatePoints = async (p) => {
     throw errors;
 };
 
+const updateStartTime = async (startTime, idIndovinello) => {
+  let errors = [];
+  
+  try {
+    const response = await fetch(
+      new URL("startTime/" + idIndovinello, SERVER_BASE), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({startTime: startTime}),
+        credentials: "include"
+      }
+    );
+    
+    if (response.ok) {
+      return;
+    } else errors = (await response.json()).errors;
+  } catch (e) {
+    const err = [e.message];
+    throw err;
+  }
+
+  if (errors.length !== 0)
+    throw errors;
+};
+
 const login = async (email, password) => {
   let errors = [];
   
@@ -274,10 +323,12 @@ const API = {
   fetchIndovinelli,
   fetchUsers,
   fetchRisposte,
+  fetchStartTime,
   submitIndovinello,
   submitRisposta,
   updateStato,
   updatePoints,
+  updateStartTime,
   login,
   logout,
   getUser

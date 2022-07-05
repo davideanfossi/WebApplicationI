@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Col, Container, Form, FormControl, Row } from "react-bootstrap";
 import { Indovinello } from "./Indovinello";
+import { primaryColor, successColor, dangerColor, greyColor } from "./Constants"
 
 function IndovinelloForm(props) {
     // Form state
@@ -34,7 +35,7 @@ function IndovinelloForm(props) {
     return (
       <Container fluid style={{"padding": "0"}}>
         <Row style={{"paddingLeft": "0.7rem"}}>
-            <b style={{"fontSize": "1.3rem", "color": "#0d6efd", "paddingBottom": "0.6rem"}}>Crea Indovinello</b>
+            <b style={{"fontSize": "1.3rem", "color": primaryColor, "paddingBottom": "0.6rem"}}>Crea Indovinello</b>
         </Row>
         <Container className="border border-4 rounded" style={{"marginTop": "0.5rem", "padding": "1rem"}}>
           <Form noValidate onSubmit={handleSubmit}>
@@ -104,7 +105,7 @@ function IndovinelloForm(props) {
               </Form.Group>
   
             </Row>
-            <Button type="submit"  style={{"marginTop": "12px"}}>Submit</Button>
+            <Button type="submit"  style={{"marginTop": "12px", "backgroundColor": primaryColor}}>Submit</Button>
           </Form>
         </Container>
       </Container>

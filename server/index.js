@@ -101,6 +101,16 @@ app.get('/api/indovinelli', async (req, res) => {
   }
 });
 
+app.get('/api/startTime/:idIndovinello', async (req, res) => {
+  try {
+    const startTime = await db.getStartTime(req.params.idIndovinello);
+    res.status(200).json(startTime);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
 app.get('/api/risposte/:id', async (req, res) => {
   try {
     const risposte = await db.getRisposte(req.params.id);
@@ -180,6 +190,22 @@ app.put("/api/stato/:id", async (req, res) => {
   else {
     try {
       await db.updateStato(req.body, req.params.id);
+      res.status(200).end();
+    } catch(err) {
+      res.status(500).json(err);
+    }
+  }
+});
+
+app.put("/api/startTime/:idIndovinello", async (req, res) => {
+  const err = validationResult(req);
+
+  if (!err.isEmpty()) {
+    res.status(422).json({errors: err.errors.map(e => e.msg)});
+  }
+  else {
+    try {
+      await db.updateStartTime(req.body, req.params.idIndovinello);
       res.status(200).end();
     } catch(err) {
       res.status(500).json(err);

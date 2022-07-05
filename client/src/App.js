@@ -4,7 +4,7 @@ import './App.css';
 import { MyNavbar, NetErrors, NotFoundPage, Page, MyIndovinelli, Visualizza, Rispondi, Risultato } from './Components';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Indovinello } from './Indovinello';
+import { Timer } from './Timer';
 import API from './API';
 import { LoginForm } from './LoginForm';
 
@@ -16,6 +16,7 @@ function App() {
 
 function Main() {
   const [indovinelli, setIndovinelli] = useState([]);
+  const [timers, setTimers] = useState([])
   const [users, setUsers] = useState([]);
   const [ready, setReady] = useState(false);
 
@@ -45,7 +46,7 @@ function Main() {
 
     API.fetchIndovinelli()
       .then(indovinelli => {
-        setIndovinelli(indovinelli);    
+        setIndovinelli(indovinelli);   
         API.fetchUsers()
         .then(u => {
           u.sort((b,a) => (a.punti > b.punti) ? 1 : ((b.punti > a.punti) ? -1 : 0));
@@ -62,7 +63,7 @@ function Main() {
     
     setRefetch(false); 
   }, [refetch]); 
-
+  
   const setErrorsChecked = e => {
     if (e.includes("Not authenticated")) {
       setLoggedIn(false);
@@ -77,57 +78,6 @@ function Main() {
       .then(() => setRefetch(true))
       .catch(e => setErrors(e))
   }
-
-/*
-  const addCorso = (corso) => {
-    // re-compute checks
-    computeAddables(); 
-    // checks
-    let c = corsi.find(c => c.codice == corso.codice);
-    if (c.addable) {
-      setGenericError(c.addable);
-      return;
-    }
-
-    // controllo crediti
-    if (time == "full-time"){
-      if (crediti + corso.crediti > 80){
-        setGenericError("Numero massimo di crediti superato");
-        return;
-      }
-    } else {
-      if (crediti + corso.crediti > 40){
-        setGenericError("Numero massimo di crediti superato");
-        return;
-      }
-    }
-
-    // aggiungi
-    setCrediti(c => c + corso.crediti);
-    setPiano(piano => [...piano, corso]);
-
-    // re-compute checks
-    //computeAddables();  
-  };
-
-  const removeCorso = (corso) => {
-    // controllo vincolo di propedeuticità
-    for (let i=0; i<piano.length; i++) {
-      if (corso.codice == piano[i].proped){
-        setPropedRemoveError(piano[i].codice + " - " + piano[i].nome);
-        return;
-      }
-    }
-
-    // remove
-    setCrediti(c => c - corso.crediti);
-    setPiano(piano => piano.filter(p => p.codice != corso.codice));
-
-    // re-compute checks
-    computeAddables();
-  };
-
-*/
 
   const login = (email, password) => {
     return API.login(email, password)
@@ -150,6 +100,8 @@ function Main() {
   
   const mainPage = errors.length ? <NetErrors errors={errors}/> : <Page
     indovinelli={indovinelli}
+    timers={timers}
+    setTimers={setTimers}
     user={user}
     users={users}
     loggedIn={loggedIn}

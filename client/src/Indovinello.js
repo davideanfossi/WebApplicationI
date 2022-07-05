@@ -1,6 +1,6 @@
 class Indovinello {
 
-  constructor(id, domanda, soluzione, sugg1, sugg2, difficolta, tempo, stato, user) {
+  constructor(id, domanda, soluzione, sugg1, sugg2, difficolta, tempo, stato, user, startTime) {
     this.id = id;
     this.domanda = domanda;
     this.soluzione = soluzione;
@@ -10,11 +10,7 @@ class Indovinello {
     this.tempo = tempo;
     this.stato = stato;
     this.user = user;
-    this.startTime = null;
-  }
-
-  startTimer() {
-    
+    this.startTime = startTime
   }
 
 }

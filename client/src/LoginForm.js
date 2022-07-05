@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import validator from "validator";
+import { primaryColor } from "./Constants";
 
 function LoginForm(props) {
   const [mail, setMail] = useState("john.doe@polito.it");
@@ -74,7 +75,7 @@ function LoginForm(props) {
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Button type="submit" disabled={waiting}>Login</Button>
+          <Button type="submit" disabled={waiting} style={{"backgroundColor": primaryColor}}>Login</Button>
         </Form>
         {
           loginError ? <LoginError error={loginError} clearError={() => setLoginError("")}/> : false
