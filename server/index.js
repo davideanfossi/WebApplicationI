@@ -28,7 +28,7 @@ passport.use(new LocalStrategy(function(email, password, done) {
     .then((user) => {
       if (user) done(null, user);
       else      done({status: 401, msg: "Incorrect email and/or password"}, false);
-    }).catch(() => /* db error */ done({status: 500, msg: "Database error"}, false));
+    }).catch(() => done({status: 500, msg: "Database error"}, false));
 }));
 
 passport.serializeUser((user, done) => {
