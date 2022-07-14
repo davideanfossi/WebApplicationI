@@ -163,12 +163,12 @@ function IndovinelloRow(props) {
                 props.indovinello.user != props.user.id ? (
                   props.indovinello.stato == "aperto" ? 
                   (
-                    answered ? <Button onClick={() => {}} style={{"marginRight": "10px", "backgroundColor": greyColor, "borderColor": greyColor}}>Answered</Button>
-                    : <Button onClick={() => {navigate(`/rispondi/${props.indovinello.id}`);}} style={{"marginRight": "10px", "backgroundColor": successColor, "borderColor": successColor}}>Rispondi</Button>
+                    answered ? <Button onClick={() => {}} style={{"marginRight": "10px", "padding": "8px", "fontSize": "0.9rem", "backgroundColor": greyColor, "borderColor": greyColor}}>Answered</Button>
+                    : <Button onClick={() => {navigate(`/rispondi/${props.indovinello.id}`);}} style={{"marginRight": "10px", "padding": "8px", "fontSize": "0.9rem", "backgroundColor": successColor, "borderColor": successColor}}>Rispondi</Button>
                   ) : 
-                  <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
-                ) : <Button onClick={() => navigate(`/myIndovinelli`)} style={{"marginRight": "10px", "backgroundColor": primaryColor, "borderColor": primaryColor}}>See Mines</Button>
-                ) : <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
+                  <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "padding": "8px", "fontSize": "0.9rem", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
+                ) : <Button onClick={() => navigate(`/myIndovinelli`)} style={{"marginRight": "10px", "padding": "8px", "fontSize": "0.9rem", "backgroundColor": primaryColor, "borderColor": primaryColor}}>See Mines</Button>
+                ) : <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "padding": "8px", "fontSize": "0.9rem", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
               }
             </td> : null
           }
@@ -261,7 +261,6 @@ function MyIndovinelli(props) {
     </Container>
   )
 }
-
 
 function Visualizza(props) {
   const navigate = useNavigate();

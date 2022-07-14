@@ -23,11 +23,6 @@ app.use(cors({
   credentials: true
 }));
 
-// Delay to all responses to better evaluate the app's behavior with slow Internet
-// WARNING: Only for debugging purposes
-// app.use((req, res, next) => setTimeout(next, 1000));
-
-
 passport.use(new LocalStrategy(function(email, password, done) {
   db.getUser(email.toLowerCase(), password)
     .then((user) => {
@@ -61,40 +56,21 @@ const isLoggedIn = (req, res, next) => {
   return res.status(401).json({errors: ["Not authenticated"]});
 };
 
-
-// CREATE TABLES
-app.get('/api/tableIndovinelli', async (req, res) => {
-  try {
-    await db.newTableIndovinelli();
-    res.status(200).json("worked");
-  } catch(err) {
-    res.status(500).json(err);
-  }
-});
-
-app.get('/api/tableRisposte', async (req, res) => {
-  try {
-    await db.newTableRisposte();
-    res.status(200).json("worked");
-  } catch(err) {
-    res.status(500).json(err);
-  }
-});
-
-app.get('/api/tableUsers', async (req, res) => {
-  try {
-    await db.newTableUsers();
-    res.status(200).json("worked");
-  } catch(err) {
-    res.status(500).json(err);
-  }
-});
-
 // GET
 app.get('/api/indovinelli', async (req, res) => {
   try {
     const indovinelli = await db.getIndovinelli();
     res.status(200).json(indovinelli);
+  } catch(err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await db.getUsers();
+    res.status(200).json(users);
   } catch(err) {
     console.log(err);
     res.status(500).json(err);
@@ -115,16 +91,6 @@ app.get('/api/risposte/:id', async (req, res) => {
   try {
     const risposte = await db.getRisposte(req.params.id);
     res.status(200).json(risposte);
-  } catch(err) {
-    console.log(err);
-    res.status(500).json(err);
-  }
-});
-
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await db.getUsers();
-    res.status(200).json(users);
   } catch(err) {
     console.log(err);
     res.status(500).json(err);
@@ -158,22 +124,6 @@ app.post("/api/risposta", async (req, res) => {
     try {
       await db.createRisposta(req.body, req.user.id);
       res.status(201).end();
-    } catch(err) {
-      res.status(500).json(err);
-    }
-  }
-});
-
-app.post("/api/user", async (req, res) => {
-  const err = validationResult(req);
-
-  if (!err.isEmpty()) {
-    res.status(422).json({errors: err.errors.map(e => e.msg)});
-  }
-  else {
-    try {
-      await db.createUser(req.body);
-      res.status(200).end();
     } catch(err) {
       res.status(500).json(err);
     }
@@ -265,3 +215,54 @@ app.get("/api/user", isLoggedIn, (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+
+// -------- NOT IN USE ---------
+// POST USER
+/*
+app.post("/api/user", async (req, res) => {
+  const err = validationResult(req);
+
+  if (!err.isEmpty()) {
+    res.status(422).json({errors: err.errors.map(e => e.msg)});
+  }
+  else {
+    try {
+      await db.createUser(req.body);
+      res.status(200).end();
+    } catch(err) {
+      res.status(500).json(err);
+    }
+  }
+});
+*/
+
+// CREATE TABLES
+/*
+app.get('/api/tableIndovinelli', async (req, res) => {
+  try {
+    await db.newTableIndovinelli();
+    res.status(200).json("worked");
+  } catch(err) {
+    res.status(500).json(err);
+  }
+});
+
+app.get('/api/tableRisposte', async (req, res) => {
+  try {
+    await db.newTableRisposte();
+    res.status(200).json("worked");
+  } catch(err) {
+    res.status(500).json(err);
+  }
+});
+
+app.get('/api/tableUsers', async (req, res) => {
+  try {
+    await db.newTableUsers();
+    res.status(200).json("worked");
+  } catch(err) {
+    res.status(500).json(err);
+  }
+});
+*/
