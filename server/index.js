@@ -15,7 +15,6 @@ const port = 3001
 const Database = require('./database');
 const db = new Database("Database.db");
 
-// Insert useful middlewares
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors({
