@@ -42,12 +42,8 @@ function LoginForm(props) {
   };
 
   return (
-    <Container fluid style={{"padding": "0", "marginTop": "1rem", "maxWidth": "60%"}}>
-      <Row style={{"paddingLeft": "0.7rem"}}>
-        <h1>
-          Login
-        </h1>
-      </Row>
+    <Container fluid style={{"padding": "0", "marginTop": "5rem", "maxWidth": "25%"}}>
+      <Row style={{"paddingBottom": "1rem", "color": primaryColor}}><h1>Login</h1></Row>
       <Container className="border border-4 rounded" style={{"marginTop": "0.5rem", "padding": "1rem"}}>
         <Form noValidate onSubmit={handleSubmit}>
           <Row className="mb-3">
@@ -75,7 +71,7 @@ function LoginForm(props) {
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          <Button type="submit" disabled={waiting} style={{"backgroundColor": primaryColor}}>Login</Button>
+          <Button type="submit" disabled={waiting} style={{"backgroundColor": primaryColor, "borderColor": primaryColor}}>Login</Button>
         </Form>
         {
           loginError ? <LoginError error={loginError} clearError={() => setLoginError("")}/> : false

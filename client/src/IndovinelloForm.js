@@ -105,7 +105,7 @@ function IndovinelloForm(props) {
               </Form.Group>
   
             </Row>
-            <Button type="submit"  style={{"marginTop": "12px", "backgroundColor": primaryColor}}>Submit</Button>
+            <Button type="submit"  style={{"marginTop": "12px", "backgroundColor": primaryColor, "borderColor": primaryColor}}>Submit</Button>
           </Form>
         </Container>
       </Container>

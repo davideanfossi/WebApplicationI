@@ -4,7 +4,6 @@ import './App.css';
 import { MyNavbar, NetErrors, NotFoundPage, Page, MyIndovinelli, Visualizza, Rispondi, Risultato } from './Components';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Timer } from './Timer';
 import API from './API';
 import { LoginForm } from './LoginForm';
 
@@ -110,13 +109,13 @@ function Main() {
   />;
   
   return <Routes>   
-    <Route path="/login" element={<LoginForm login={login} />}/>   
     <Route path="/" element={<MyNavbar username={user.name} logout={logout}/>}>
-        <Route path="" element={mainPage}/>
-        <Route path="myIndovinelli" element={loggedIn ? <MyIndovinelli loggedIn={loggedIn} indovinelli={indovinelli} user={user} addIndovinello={addIndovinello}/> : <Navigate to="/"/> }/>
-        <Route path="visualizza/:idIndovinello" element={loggedIn ? <Visualizza indovinelli={indovinelli} users={users} setErrors={setErrors}/> : <Navigate to="/"/>}/>
-        <Route path="rispondi/:idIndovinello" element={loggedIn ? <Rispondi indovinelli={indovinelli} users={users} setErrors={setErrors} setRefetch={setRefetch}/> : <Navigate to="/"/>}/>
-        <Route path="risultato/:stato" element={<Risultato/>}/>
+      <Route path="/login" element={<LoginForm login={login} />}/>  
+      <Route path="" element={mainPage}/>
+      <Route path="myIndovinelli" element={loggedIn ? <MyIndovinelli loggedIn={loggedIn} indovinelli={indovinelli} user={user} addIndovinello={addIndovinello}/> : <Navigate to="/"/> }/>
+      <Route path="visualizza/:idIndovinello" element={loggedIn ? <Visualizza indovinelli={indovinelli} users={users} setErrors={setErrors}/> : <Navigate to="/"/>}/>
+      <Route path="rispondi/:idIndovinello" element={loggedIn ? <Rispondi indovinelli={indovinelli} users={users} setErrors={setErrors} setRefetch={setRefetch}/> : <Navigate to="/"/>}/>
+      <Route path="risultato/:stato" element={<Risultato/>}/>
     </Route>
     {/* Catch all page for invalid routes */}
     <Route path="*" element={<NotFoundPage/>}/>

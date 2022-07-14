@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.verticalLine{
+  min-width: 1.4px;
+  height: 46px;
+  clear:both;
+  background-color: white;
+  margin-left: 10px;
+}

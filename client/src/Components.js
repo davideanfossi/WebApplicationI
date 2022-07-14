@@ -4,6 +4,7 @@ import { Link, Outlet, useNavigate, useParams, useLocation } from 'react-router-
 import {PianoStudiButton, ErrorMessage, SubmitPiano, CancelPiano, DeletePiano, AddButton, RemoveButton} from "./Buttons"
 import { IndovinelloForm } from './IndovinelloForm';
 import API from './API';
+import './App.css';
 import { Risposte } from "./Risposte";
 import { primaryColor, successColor, dangerColor, greyColor } from "./Constants"
 
@@ -15,14 +16,17 @@ function MyNavbar(props) {
         <Container fluid>
           <Nav>
             <Navbar.Brand href="/" style={{"color": "white", "paddingLeft": "10%"}} onClick={event => { event.preventDefault(); navigate("/"); }}>
-                <i style={{"paddingRight":"10px"}} className="bi bi-mortarboard-fill"/> 
+                <i style={{"paddingRight":"20px", "fontSize": "1.5rem", "verticalAlign": "middle"}} class="bi bi-patch-question-fill"></i>
                 App Indovinelli
             </Navbar.Brand> 
-            {
+            {  
               props.username ? 
-              <Nav.Item>
-                <Nav.Link style={{"color": "white", "width": "200px"}} onClick={event => { event.preventDefault(); navigate("/myIndovinelli"); }}>My Indovinelli</Nav.Link>
-              </Nav.Item> : null
+              <>
+                <div className="verticalLine"></div>
+                <Nav.Item style={{"paddingLeft": "1rem"}}>
+                  <Nav.Link style={{"color": "white", "width": "200px"}} onClick={event => { event.preventDefault(); navigate("/myIndovinelli"); }}>My Indovinelli</Nav.Link>
+                </Nav.Item>
+              </> : null
             }  
           </Nav>
 
@@ -54,24 +58,16 @@ function MyNavbar(props) {
           </Nav>
         </Container>
       </Navbar>
-  
       <Outlet/>
     </>;
 }
-
-/*
-API.updateStartTime(Date.now(), props.id)
-  .then( () => {
-    setStartTime(Date.now());
-    setStartCount(true);
-  })
-  */
 
 function Timer(props){
   const [startTime, setStartTime] = useState(0);
   const [timer, setTimer] = useState("-");
   const [intervalId, setIntervalId] = useState(false);
   const [startCount, setStartCount] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if(props.stato == "aperto"){
@@ -93,12 +89,20 @@ function Timer(props){
   }, [startCount]);
 
   useEffect(() => {
+    if (timer <= Math.floor(props.tempo/2))
+      props.setShowSugg1(true);
+    
+    if (timer <= Math.floor(props.tempo/4))
+      props.setShowSugg2(true);
+
     if (timer <= 0){
       clearInterval(intervalId);
       API.updateStato("chiuso", props.id)
-        .then(() => {props.setRefetch(true);})
+        .then(() => {
+          props.setRefetch(true);
+          navigate("/visualizza/tempo"); 
+        })
         .catch(e => console.log(e));
-      setTimer("-");
     }    
   }, [timer]);
 
@@ -119,7 +123,8 @@ function Timer(props){
 function IndovinelloRow(props) {
     const navigate=useNavigate();
     const [answered, setAnswered] = useState(false);
-    
+    const location = useLocation().pathname;
+
     // check if user alredy submitterd answer to indovinello
     // props.user, rispotes di props.indovinello.id
     useEffect(() => {
@@ -138,7 +143,7 @@ function IndovinelloRow(props) {
               <Timer id={props.indovinello.id} stato={props.indovinello.stato} tempo={props.indovinello.tempo} setRefetch={props.setRefetch}/>
             }        
           </td>
-          <td style={{"maxWidth": "400px", "word-wrap": "break-word"}}>
+          <td style={{"maxWidth": "380px", "word-wrap": "break-word"}}>
               <span>{props.indovinello.domanda}</span>
           </td>
           <td>
@@ -154,12 +159,16 @@ function IndovinelloRow(props) {
           { props.loggedIn ?
             <td style={{"textAlign":"right"}}>
               {
-                props.indovinello.stato == "aperto" &&  props.indovinello.user != props.user.id? 
-                (
-                  answered ? <Button onClick={() => {}} style={{"marginRight": "10px", "backgroundColor": greyColor, "borderColor": greyColor}}>Answered</Button>
-                  : <Button onClick={() => {navigate(`/rispondi/${props.indovinello.id}`);}} style={{"marginRight": "10px", "backgroundColor": successColor, "borderColor": successColor}}>Rispondi</Button>
-                ) : 
-                <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "backgroundColor": dangerColor, "borderColor": dangerColor}}>visualizza</Button>
+                location == "/" ? (
+                props.indovinello.user != props.user.id ? (
+                  props.indovinello.stato == "aperto" ? 
+                  (
+                    answered ? <Button onClick={() => {}} style={{"marginRight": "10px", "backgroundColor": greyColor, "borderColor": greyColor}}>Answered</Button>
+                    : <Button onClick={() => {navigate(`/rispondi/${props.indovinello.id}`);}} style={{"marginRight": "10px", "backgroundColor": successColor, "borderColor": successColor}}>Rispondi</Button>
+                  ) : 
+                  <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
+                ) : <Button onClick={() => navigate(`/myIndovinelli`)} style={{"marginRight": "10px", "backgroundColor": primaryColor, "borderColor": primaryColor}}>See Mines</Button>
+                ) : <Button onClick={() => navigate(`/visualizza/${props.indovinello.id}`)} style={{"marginRight": "10px", "backgroundColor": dangerColor, "borderColor": dangerColor}}>Visualizza</Button>
               }
             </td> : null
           }
@@ -258,38 +267,52 @@ function Visualizza(props) {
   const navigate = useNavigate();
   const [risposte, setRisposte] = useState([]);
   const [ready, setReady] = useState(false);
+  const [indovinello, setIndovinello] = useState(false);
 
   useEffect(() => {
+    if (props.indovinelli.length == 0) return;
+
+    if (!props.indovinelli.find(i => i.id == idIndovinello))
+      navigate("*");
+    setIndovinello(props.indovinelli.find(i => i.id == idIndovinello));
+
     API.fetchRisposte(idIndovinello)
       .then(r => {
         setRisposte(r);
         setReady(true);
       })
       .catch(e => props.setErrors(e));
-  }, []);
+  }, [props.indovinelli]);
 
-  const idIndovinello = useParams().idIndovinello
-  if (!props.indovinelli.find(i => i.id == idIndovinello))
-    return <NotFoundPage/>
-  const indovinello = props.indovinelli.find(i => i.id == idIndovinello);
-  
+  const idIndovinello = useParams().idIndovinello;
+
   return (<>
     {
     ready ? 
     <Container fluid style={{"paddingTop": "20px"}}>
       <Row className="justify-content-md-center" style={{"minHeight": "100vh"}}>
         <Col className="col-4" style={{"paddingTop": "1rem", "paddingRight": "2rem"}}>
-          <Button onClick={() => navigate(-1)} style={{"backgroundColor": primaryColor}}>Back</Button>
+          <Button onClick={() => navigate(-1)} style={{"backgroundColor": primaryColor, "borderColor": primaryColor}}>Back</Button>
           <div style={{"backgroundColor": "#f0f0f0", "padding": "1.5rem", "marginTop": "1rem", "border": "2px solid #bdbdbd", "borderRadius": "10px"}}>
-            <p><b>Domanda:</b> {indovinello.domanda}</p>
-            <p><b>Soluzione:</b> {indovinello.soluzione}</p>
+            <p>Domanda: <b>{indovinello.domanda}</b></p>
+            <p>Soluzione: <b>{indovinello.soluzione}</b></p>
+            <p>Stato:&nbsp;
+              <b><i>{
+                indovinello.stato == "aperto" ? 
+                <span style={{"color" : successColor}}>{indovinello.stato}</span> : 
+                <span style={{"color" : dangerColor}}>{indovinello.stato}</span>
+              }</i></b>
+            </p>
             {
               risposte.find(r => r.risposta == indovinello.soluzione) ? 
-              <p><b>Vincitore:</b> {props.users.find(u => u.id == risposte.find(r => r.risposta == indovinello.soluzione).user).nome}</p> :
+              <p>Vincitore: <b>{props.users.find(u => u.id == risposte.find(r => r.risposta == indovinello.soluzione).user).nome}</b></p> :
               (
                 indovinello.stato == "chiuso" ?
                 <p><b>Nessun Vincitore, tempo scaduto</b></p> :
-                <p><b>Indovinello aperto - tempo rimanente {indovinello.tempo}</b></p>
+                <p><Row>
+                  <Col className="col-sm-auto"style={{"paddingRight": "0px"}}><div>Indovinello aperto - tempo rimanente: </div></Col>
+                  <Col><Timer id={indovinello.id} stato={indovinello.stato} tempo={indovinello.tempo} setRefetch={props.setRefetch}/></Col>
+                </Row></p>
               )
             }
             <p><b>Risposte:</b> {risposte.map(r => (<div>&emsp;&emsp;{props.users.find(u => u.id == r.user).nome}: <i>{r.risposta}</i></div>))}</p>
@@ -304,6 +327,8 @@ function Visualizza(props) {
 function Rispondi(props) {
   const navigate = useNavigate();
   const [risposta, setRisposta] = useState(null);
+  const [showSugg1, setShowSugg1] = useState(false);
+  const [showSugg2, setShowSugg2] = useState(false);
 
   const idIndovinello = useParams().idIndovinello
   if (!props.indovinelli.find(i => i.id == idIndovinello))
@@ -321,7 +346,6 @@ function Rispondi(props) {
       punti = 3;
       break;
   }
-
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -368,15 +392,16 @@ function Rispondi(props) {
     <Container fluid style={{"paddingTop": "20px"}}>
       <Row className="justify-content-md-center" style={{"minHeight": "100vh"}}>
         <Col className="col-4" style={{"paddingTop": "1rem", "paddingRight": "2rem"}}>
-          <Button onClick={() => navigate(-1)} >Back</Button>
+          <Button onClick={() => navigate(-1)} style={{"backgroundColor": primaryColor, "borderColor": primaryColor}}>Back</Button>
           <div style={{"backgroundColor": "#f0f0f0", "padding": "1.5rem", "marginTop": "1rem", "border": "2px solid #bdbdbd", "borderRadius": "10px"}}>
-            <div>Domanda: {indovinello.domanda}</div>
-            <Row>
+            <p>Domanda: <b>{indovinello.domanda}</b></p>
+            <p><Row>
               <Col className="col-sm-auto"style={{"paddingRight": "0px"}}><div>Tempo: </div></Col>
-              <Col><Timer id={indovinello.id} stato={indovinello.stato} tempo={indovinello.tempo} setRefetch={props.setRefetch}/></Col>
-            </Row>
-            <div>sugg1: {indovinello.sugg1}</div>
-            <div>sugg2: {indovinello.sugg2}</div>
+              <Col><Timer id={indovinello.id} stato={indovinello.stato} tempo={indovinello.tempo} setShowSugg1={setShowSugg1}
+               setShowSugg2={setShowSugg2} setRefetch={props.setRefetch}/></Col>
+            </Row></p>
+            <p>Suggerimento 1: {showSugg1 ? <b>{indovinello.sugg1}</b> : <i>hidden</i>}</p>
+            <p>Suggerimento 2: {showSugg2 ? <b>{indovinello.sugg2}</b> : <i>hidden</i>}</p>
             <Form noValidate onSubmit={handleSubmit}>
                 <Form.Group>
                   <Form.Label>Risposta:</Form.Label>
@@ -388,7 +413,7 @@ function Rispondi(props) {
                     Risposta non può essere vuota
                   </Form.Control.Feedback>
                 </Form.Group>
-              <Button type="submit"  style={{"marginTop": "12px"}}>Submit</Button>
+              <Button type="submit" style={{"marginTop": "12px", "backgroundColor": primaryColor, "borderColor": primaryColor}}>Submit</Button>
             </Form>
           </div>
         </Col>
@@ -402,14 +427,16 @@ function Risultato(props) {
   const navigate = useNavigate();
 
   const stato = useParams().stato
-  if (!(stato == "corretto" || stato == "errato"))
+  if (!(stato == "corretto" || stato == "errato" || stato == "tempo"))
     return <NotFoundPage/>
 
   return (<Container fluid style={{"paddingTop": "20px"}}>
       <Row className="justify-content-md-center" style={{"minHeight": "100vh"}}>
         <Col className="col-3" style={{"paddingTop": "1rem", "paddingRight": "2rem"}}>
           <div style={{"backgroundColor": "#f0f0f0", "padding": "1.5rem", "marginBottom": "1rem", "marginTop": "1rem", "border": "2px solid #bdbdbd", "borderRadius": "10px"}}>
-            {stato == "corretto" ? <>Risposta corretta!</> : <>Risposta errata</>}
+            {stato == "corretto" ? <>Risposta corretta!</> : (
+              stato == "tempo" ? <>tempo scaduto</> : <>Risposta errata</>
+            )}
           </div>
           <Button onClick={() => navigate("/")} >Home</Button>
         </Col>
