@@ -68,6 +68,7 @@ function Timer(props){
   const [intervalId, setIntervalId] = useState(false);
   const [startCount, setStartCount] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation().pathname;
 
   useEffect(() => {
     if(props.stato == "aperto"){
@@ -89,10 +90,10 @@ function Timer(props){
   }, [startCount]);
 
   useEffect(() => {
-    if (timer <= Math.floor(props.tempo/2))
+    if (timer <= Math.floor(props.tempo/2) && props.setShowSugg1)
       props.setShowSugg1(true);
     
-    if (timer <= Math.floor(props.tempo/4))
+    if (timer <= Math.floor(props.tempo/4) && props.setShowSugg2)
       props.setShowSugg2(true);
 
     if (timer <= 0){
@@ -100,7 +101,8 @@ function Timer(props){
       API.updateStato("chiuso", props.id)
         .then(() => {
           props.setRefetch(true);
-          navigate("/visualizza/tempo"); 
+          if (location.includes("rispondi"))
+            navigate("/risultato/tempo"); 
         })
         .catch(e => console.log(e));
     }    
@@ -282,6 +284,23 @@ function Visualizza(props) {
       })
       .catch(e => props.setErrors(e));
   }, [props.indovinelli]);
+
+  useEffect(() => {
+    if (!ready) return;
+
+    if (indovinello.stato == "aperto"){
+      const intervalId = setInterval(() => {
+        API.fetchRisposte(idIndovinello)
+          .then(r => {
+            setRisposte(r);
+            setReady(true);
+          })
+          .catch(e => props.setErrors(e));
+      }, 1000); 
+      return () => clearInterval(intervalId);
+    }
+    
+  }, [ready]);
 
   const idIndovinello = useParams().idIndovinello;
 
